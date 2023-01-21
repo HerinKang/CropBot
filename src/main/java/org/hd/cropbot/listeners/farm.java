@@ -60,12 +60,4 @@ public class farm {
         }
         list = newPlot;
     }
-    public String help() {
-        String help = "Welcome to CropBot! \n\n" +
-                "A list of general commands: \n" +
-                "/farm - Displays your current farm, as is.\n" +
-                "/plant - Plants a seedling in the first available spot.\n" +
-                "/expand - Expands the farm by 1 row and 1 column. The new tiles become dirt.\n";
-        return help;
-    }
 }
