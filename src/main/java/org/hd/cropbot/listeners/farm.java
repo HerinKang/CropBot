@@ -45,11 +45,19 @@ public class farm {
         return farm;
     }
 
-    public void resizePlot(int newSize) {
-
-    }
-
-    public void setPlotsize(int plotsize) {
-        this.plotsize = plotsize;
+    public void resizePlot() {
+        plotsize++;
+        plot[][] newPlot = new plot[this.plotsize][this.plotsize];
+        for (int i = 0; i < this.plotsize; i++) {
+            for (int j = 0; j < this.plotsize; j++) {
+                if (newPlot[i][j] == null) {
+                    newPlot[i][j] = new plot(0,":brown_square:",0,0);
+                }
+                if (i < plotsize - 1 && j < plotsize - 1) {
+                    newPlot[i][j] = list[i][j];
+                }
+            }
+        }
+        list = newPlot;
     }
 }

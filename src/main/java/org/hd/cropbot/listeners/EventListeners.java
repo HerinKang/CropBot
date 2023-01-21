@@ -51,6 +51,9 @@ public class EventListeners extends ListenerAdapter {
         } else if (command.equals("plant")) {
             farm.plantPlant(new plot(0,":seedling:",0,0));
             event.reply(farm.displayFarm()).queue();
+        } else if (command.equals("expand")) {
+            farm.resizePlot();
+            event.reply(farm.displayFarm()).queue();
         }
     }
 
@@ -65,6 +68,8 @@ public class EventListeners extends ListenerAdapter {
         commandData.add(Commands.slash("farm","open farm"));
 
         commandData.add(Commands.slash("plant","plant a plant"));
+
+        commandData.add(Commands.slash("expand", "expand current plot size by 1"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();
 
