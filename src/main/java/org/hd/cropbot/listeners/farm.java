@@ -26,7 +26,9 @@ public class farm {
         }
     }
 
-    public void plantPlant(int selection) {
+    public void plantPlant(int selection, int buyPrice, int sellPrice, Inventory inventory) {
+
+        /*
         String type = inventory.getItemFromSelection(selection);
         boolean loop = true;
         for (int i = 0; i < plotsize; i++) {
@@ -41,6 +43,25 @@ public class farm {
                 }
             }
         }
+         */
+        inventory = inventory;
+        String type = inventory.getItemFromSelection(selection);
+        boolean loop = true;
+        for (int i = 0; i < plotsize; i++) {
+            if (loop == false) {
+                break;
+            }
+            for (int j = 0; j < plotsize; j++) {
+                if (list[i][j].getType().equals(":brown_square:")) {
+                    list[i][j] = new plot(LocalDateTime.now(), type, buyPrice, sellPrice);
+                    inventory.decreaseCount(selection);
+                    loop = false;
+                    break;
+                }
+            }
+        }
+
+
     }
 
     public String displayFarm() {
@@ -48,10 +69,13 @@ public class farm {
         for (int i = 0; i < plotsize; i++) {
             for (int j = 0; j < plotsize; j++) {
                 if (timeDifference(list[i][j].getTime()) >= 0.01 && list[i][j].getType() != ":brown_square:") {
-                    list[i][j].setType(":tulip:");
+                    list[i][j].setType(list[i][j].getType());
+                    farm += list[i][j].getType();
+                } else if (list[i][j].getType() != ":brown_square:") {
+                    farm += ":seedling:";
+                } else {
+                    farm += ":brown_square:";
                 }
-                System.out.println(list[i][j].getTime());
-                farm += list[i][j].getType();
             }
             farm += "\n";
         }

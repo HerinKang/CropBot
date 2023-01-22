@@ -39,12 +39,12 @@ public class shop {
     public String displayShop() {
         String shopVisual = "";
         int count = 0;
-        for (int i = shopSize; i > 0; i--) {
+        for (int i = 0; i < shopSize; i++) {
             if (count%5 != 0 && count != 0) {
-                shopVisual += shop.get(i-1).getName();
+                shopVisual += shop.get(i).getName();
                 count++;
             } else {
-                shopVisual += "\n" + shop.get(i-1).getName();
+                shopVisual += "\n" + shop.get(i).getName();
                 count++;
             }
         }
