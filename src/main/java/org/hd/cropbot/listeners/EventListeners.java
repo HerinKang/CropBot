@@ -66,7 +66,7 @@ public class EventListeners extends ListenerAdapter {
             farm.resizePlot();
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("help")) {
-            getChannel().sendMessageEmbeds(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }
 
