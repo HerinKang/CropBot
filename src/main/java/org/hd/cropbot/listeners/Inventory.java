@@ -11,6 +11,7 @@ public class Inventory {
 
     /**
      * Returns whatever plant was selected, only including the emoji that was planted (the plot type)
+     *
      * @param selection The number the user selected in the inventory
      * @return example returned String: :seedling: or :tulip:
      */
@@ -19,17 +20,22 @@ public class Inventory {
         emoji = emoji.substring(emoji.indexOf(":"), emoji.lastIndexOf(":"));
         return emoji;
     }
+
     public String getFormattedInventory() {
         String formattedInventory = ""; // goes through the inventory and appends
         for (String s : inventory) {
             formattedInventory.concat(s + "\n");
+        }
+        if (formattedInventory.equals("")) {
+            formattedInventory = "the inventory is empty";
         }
         return formattedInventory;
     }
 
     /**
      * Changes the quantity of a particular plant in the inventory
-     * @param selection the number representing the plant in the inventory. minimum value is 1
+     *
+     * @param selection   the number representing the plant in the inventory. minimum value is 1
      * @param newQuantity the changed quantity. Generally is only +1 or -1 from old quantity
      */
     public void setInventory(int selection, int newQuantity) {
@@ -51,13 +57,13 @@ public class Inventory {
         }
     }
 
-    public void addPlantToInventory(String plantType) {
+    public void addPlantToInventory(plant plantType) {
         String lineWithPlant = "";
         for (int i = 0; i < inventory.size(); i++) {
-            if (inventory.get(i).contains(plantType)) {
+            if (inventory.get(i).contains(plantType.getName())) {
                 lineWithPlant = inventory.get(i); // get the current line of the inventory
                 // then find the current quantity so it can be adjusted
-                String quantity = lineWithPlant.substring(lineWithPlant.length() - 1);
+                String quantity = lineWithPlant.substring(lineWithPlant.indexOf("-") + 1);
                 int currentQuantity = Integer.parseInt(quantity);
                 this.setInventory(i + 1, currentQuantity + 1);
                 return;
