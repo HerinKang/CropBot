@@ -28,6 +28,11 @@ import java.util.ArrayList;
 public class EventListeners extends ListenerAdapter {
 
     farm farm = new farm(3);
+    ArrayList<plant> options = new ArrayList<>();
+    ArrayList<String> things = new ArrayList<>();
+    Inventory inventory = new Inventory(things);
+
+    shop shop = new shop(25,3);
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     LocalDateTime now;
     @Override
@@ -66,13 +71,27 @@ public class EventListeners extends ListenerAdapter {
         } else if (command.equals("farm")) {
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("plant")) {
-            farm.plantPlant(new plot(LocalDateTime.now(),":seedling:",0,0));
+            farm.plantPlant(1);
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("expand")) {
             farm.resizePlot();
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("help")) {
             event.getChannel().sendMessageEmbeds(eb.build()).queue();
+        } else if (command.equals("shop")) {
+            options.add(new plant(":sunflower:",30, 50));
+            options.add(new plant(":tulip:",50, 100));
+            shop.setOptions(options);
+            shop.randomizeNewShop();
+            event.reply(shop.displayShop()).queue();
+        } else if (command.equals("buy")) {
+            OptionMapping messageOption = event.getOption("pos");
+            int boughtPos = messageOption.getAsInt();
+            System.out.println(shop.getPlant(boughtPos).getName());
+            shop.buyPlant(boughtPos);
+            event.reply(shop.displayShop()).queue();
+        } else if (command.equals("inventory")) {
+            event.reply(inventory.getFormattedInventory()).queue();
         }
     }
 
@@ -91,6 +110,13 @@ public class EventListeners extends ListenerAdapter {
         commandData.add(Commands.slash("expand", "expand current plot size by 1"));
 
         commandData.add(Commands.slash("help", "provides info on various CropBot commands"));
+
+        commandData.add(Commands.slash("shop", "opens shop"));
+
+        OptionData buyOption = new OptionData(OptionType.INTEGER, "pos","thing to be bought",true);
+        commandData.add(Commands.slash("buy", "buys thing").addOptions(buyOption));
+
+        commandData.add(Commands.slash("inventory", "opens inventory"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();
 

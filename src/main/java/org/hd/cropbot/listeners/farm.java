@@ -10,6 +10,7 @@ public class farm {
     String dirt = ":brown_square:";
     private plot[][] list;
     private int plotsize;
+    private Inventory inventory;
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private LocalDateTime now;
@@ -24,7 +25,8 @@ public class farm {
         }
     }
 
-    public void plantPlant(plot plot) {
+    public void plantPlant(int selection) {
+        String type = inventory.getItemFromSelection(selection);
         boolean loop = true;
         for (int i = 0; i < plotsize; i++) {
             if (loop == false) {
@@ -32,7 +34,7 @@ public class farm {
             }
             for (int j = 0; j < plotsize; j++) {
                 if (list[i][j].getType().equals(":brown_square:")) {
-                    list[i][j] = plot;
+                    list[i][j] = new plot(LocalDateTime.now(), type, 0, 0);
                     loop = false;
                     break;
                 }
