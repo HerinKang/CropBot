@@ -1,5 +1,6 @@
 package org.hd.cropbot.listeners;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -17,12 +18,18 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class EventListeners extends ListenerAdapter {
 
     farm farm = new farm(3);
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    LocalDateTime now;
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
         //when user reacts to a message with an emoji
@@ -36,6 +43,16 @@ public class EventListeners extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle("Welcome to CropBot!");
+        eb.setColor(Color.GREEN);
+        eb.setFooter("BoilerMake X - Herin Kang and Dylan Boyer");
+        eb.addField("Here are a list of general commands:", "/farm - Displays your current farm, as is.\n" +
+                "/plant - Plants a seedling in the first available spot. \n" +
+                "/expand - Expands the farm by 1 row and 1 column. The new tiles become dirt.", false);
+        eb.setImage("https://cdn.discordapp.com/attachments/1024123337900818533/1066178407953616956/discord_pfp.jpg");
+
         String command = event.getName();
         if (command.equals("test")) {
             //gets data user passes into option argument (gets the message the user sends in this case)
@@ -49,8 +66,13 @@ public class EventListeners extends ListenerAdapter {
         } else if (command.equals("farm")) {
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("plant")) {
-            farm.plantPlant(new plot(0,":seedling:",0,0));
+            farm.plantPlant(new plot(LocalDateTime.now(),":seedling:",0,0));
             event.reply(farm.displayFarm()).queue();
+        } else if (command.equals("expand")) {
+            farm.resizePlot();
+            event.reply(farm.displayFarm()).queue();
+        } else if (command.equals("help")) {
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }
 
@@ -65,6 +87,10 @@ public class EventListeners extends ListenerAdapter {
         commandData.add(Commands.slash("farm","open farm"));
 
         commandData.add(Commands.slash("plant","plant a plant"));
+
+        commandData.add(Commands.slash("expand", "expand current plot size by 1"));
+
+        commandData.add(Commands.slash("help", "provides info on various CropBot commands"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();
 
