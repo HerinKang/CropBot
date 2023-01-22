@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class EventListeners extends ListenerAdapter {
+    boolean farmInitalized = false;
+    boolean shopInitialized = false;
 
     farm farm = new farm(3);
     ArrayList<plant> options = new ArrayList<>();
@@ -50,8 +52,11 @@ public class EventListeners extends ListenerAdapter {
         eb.setColor(Color.GREEN);
         eb.setFooter("BoilerMake X - Herin Kang and Dylan Boyer");
         eb.addField("Here are a list of general commands:", "/farm - Displays your current farm, as is.\n" +
-                "/plant - Plants a seedling in the first available spot. \n" +
-                "/expand - Expands the farm by 1 row and 1 column. The new tiles become dirt.", false);
+                "/plant [number] - Plants a seedling based on whichever plant you selected from your inventory. \n" +
+                "/expand - Expands the farm by 1 row and 1 column. The new tiles become dirt. \n" +
+                "/shop - Shows all of the available plants to buy. \n" +
+                "/buy [number] - Given a number input, it buys whichever plant is in the selected slot. \n" +
+                "/inventory - Shows a numbered inventory. Use the number to plant plants with /plant.", false);
         eb.setImage("https://cdn.discordapp.com/attachments/1024123337900818533/1066178407953616956/discord_pfp.jpg");
 
         String command = event.getName();
@@ -65,10 +70,28 @@ public class EventListeners extends ListenerAdapter {
             //event.getChannel().sendMessage(message).queue();
             event.reply("your message was sent").setEphemeral(true).queue();
         } else if (command.equals("farm")) {
+            farmInitalized = true;
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("plant")) {
+            if (!farmInitalized) {
+                event.reply("Error: Your farm isn't initialized! Please run /farm and try again.")
+                        .setEphemeral(true).queue();
+                return;
+            }
             OptionMapping messageOption = event.getOption("plantpos");
-            int inventoryPos = messageOption.getAsInt();
+            int inventoryPos = 1;
+            try {
+                inventoryPos = messageOption.getAsInt();
+            } catch (NumberFormatException e) {
+                event.reply("Error: Please enter a proper number for the plant you wish to plant.")
+                        .setEphemeral(true).queue();
+                return;
+            }
+            if (inventory.getFormattedInventory().equals("the inventory is empty")) {
+                event.reply("Error: Your inventory is empty! Please add a plant to your inventory and try again.")
+                        .setEphemeral(true).queue();
+                return;
+            }
             String type = inventory.getItemFromSelection(inventoryPos);
             int buyPrice = 0;
             int sellPrice = 0;
@@ -78,8 +101,14 @@ public class EventListeners extends ListenerAdapter {
                     sellPrice = options.get(i).getSellPrice();
                 }
             }
-            farm.plantPlant(1,buyPrice,sellPrice,inventory);
+            farm.plantPlant(inventoryPos, buyPrice, sellPrice, inventory);
+            event.reply(farm.displayFarm()).queue();
         } else if (command.equals("expand")) {
+            if (!farmInitalized) {
+                event.reply("Error: Your farm isn't initialized! Please run /farm and try again.")
+                        .setEphemeral(true).queue();
+                return;
+            }
             farm.resizePlot();
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("help")) {
@@ -90,12 +119,30 @@ public class EventListeners extends ListenerAdapter {
             options.add(new plant(":blossom:",10, 30));
             shop.setOptions(options);
             shop.randomizeNewShop();
+            shopInitialized = true;
             event.reply(shop.displayShop()).queue();
         } else if (command.equals("buy")) {
+            if (!shopInitialized) {
+                event.reply("Error: Your shop isn't initialized! Please run /shop and try again.")
+                        .setEphemeral(true).queue();
+                return;
+            }
             OptionMapping messageOption = event.getOption("pos");
-            int boughtPos = messageOption.getAsInt();
-            System.out.println(shop.getPlant(boughtPos-1));
-            inventory.addPlantToInventory(shop.getPlant(boughtPos-1).getName());
+            int boughtPos = 1;
+            try {
+                boughtPos = messageOption.getAsInt();
+            } catch (NumberFormatException e) {
+                event.reply("Error: Please enter a number for the plant you wish to buy.")
+                        .setEphemeral(true).queue();
+                return;
+            }
+            System.out.println(shop.getPlant(boughtPos - 1));
+            if (shop.getPlant(boughtPos - 1).getName().equals(":black_large_square:")) {
+                event.reply("Error: This selection is invalid. Please select a tile with a plant instead.")
+                        .setEphemeral(true).queue();
+                return;
+            }
+            inventory.addPlantToInventory(shop.getPlant(boughtPos - 1).getName());
             shop.buyPlant(boughtPos);
             event.reply(shop.displayShop()).queue();
         } else if (command.equals("inventory")) {
