@@ -63,7 +63,8 @@ public class EventListeners extends ListenerAdapter {
         } else if (command.equals("farm")) {
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("plant")) {
-            farm.plantPlant(new plot(LocalDateTime.now(),":seedling:",0,0));
+            // TODO: FIgure out how to make the event listener find the number AND handle errors for invalid input
+            farm.plantPlant(1);
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("expand")) {
             farm.resizePlot();

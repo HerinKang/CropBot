@@ -3,12 +3,22 @@ package org.hd.cropbot.listeners;
 import java.util.ArrayList;
 
 public class Inventory {
-    private ArrayList<String> inventory = new ArrayList<>();
+    private ArrayList<String> inventory;
 
     public Inventory(ArrayList<String> inventory) {
         this.inventory = inventory;
     }
 
+    /**
+     * Returns whatever plant was selected, only including the emoji that was planted (the plot type)
+     * @param selection The number the user selected in the inventory
+     * @return example returned String: :seedling: or :tulip:
+     */
+    public String getItemFromSelection(int selection) {
+        String emoji = inventory.get(selection - 1);
+        emoji = emoji.substring(emoji.indexOf(":"), emoji.lastIndexOf(":"));
+        return emoji;
+    }
     public String getFormattedInventory() {
         String formattedInventory = ""; // goes through the inventory and appends
         for (String s : inventory) {
@@ -39,5 +49,22 @@ public class Inventory {
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Not a valid selection!");
         }
+    }
+
+    public void addPlantToInventory(String plantType) {
+        String lineWithPlant = "";
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).contains(plantType)) {
+                lineWithPlant = inventory.get(i); // get the current line of the inventory
+                // then find the current quantity so it can be adjusted
+                String quantity = lineWithPlant.substring(lineWithPlant.length() - 1);
+                int currentQuantity = Integer.parseInt(quantity);
+                this.setInventory(i + 1, currentQuantity + 1);
+                return;
+            }
+        }
+        // If we made it down here, the plant is not currently in the inventory. So we need to add it
+        int order = inventory.size() + 1;
+        inventory.add(order + ". " + plantType + " - 1");
     }
 }
