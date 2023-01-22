@@ -29,8 +29,7 @@ public class EventListeners extends ListenerAdapter {
 
     farm farm = new farm(3);
     ArrayList<plant> options = new ArrayList<>();
-    ArrayList<String> things = new ArrayList<>();
-    Inventory inventory = new Inventory(things);
+    Inventory inventory = new Inventory();
 
     shop shop = new shop(25,3);
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -71,7 +70,18 @@ public class EventListeners extends ListenerAdapter {
         } else if (command.equals("farm")) {
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("plant")) {
-            farm.plantPlant(1);
+            OptionMapping messageOption = event.getOption("plantpos");
+            int inventoryPos = messageOption.getAsInt();
+            String type = inventory.getItemFromSelection(inventoryPos);
+            int buyPrice = 0;
+            int sellPrice = 0;
+            for (int i = 0; i < options.size(); i++) {
+                if (options.get(i).getName().equals(type)) {
+                    buyPrice = options.get(i).getBuyPrice();
+                    sellPrice = options.get(i).getSellPrice();
+                }
+            }
+            farm.plantPlant(1,buyPrice,sellPrice,inventory);
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("expand")) {
             farm.resizePlot();
@@ -81,13 +91,15 @@ public class EventListeners extends ListenerAdapter {
         } else if (command.equals("shop")) {
             options.add(new plant(":sunflower:",30, 50));
             options.add(new plant(":tulip:",50, 100));
+            options.add(new plant(":blossom:",10, 30));
             shop.setOptions(options);
             shop.randomizeNewShop();
             event.reply(shop.displayShop()).queue();
         } else if (command.equals("buy")) {
             OptionMapping messageOption = event.getOption("pos");
             int boughtPos = messageOption.getAsInt();
-            System.out.println(shop.getPlant(boughtPos).getName());
+            System.out.println(shop.getPlant(boughtPos-1));
+            inventory.addPlantToInventory(shop.getPlant(boughtPos-1).getName());
             shop.buyPlant(boughtPos);
             event.reply(shop.displayShop()).queue();
         } else if (command.equals("inventory")) {
@@ -104,8 +116,8 @@ public class EventListeners extends ListenerAdapter {
         commandData.add(Commands.slash("test","test simple slash command").addOptions(testoption));
 
         commandData.add(Commands.slash("farm","open farm"));
-
-        commandData.add(Commands.slash("plant","plant a plant"));
+        OptionData plantOption = new OptionData(OptionType.INTEGER, "plantpos","thing to be planted",true);
+        commandData.add(Commands.slash("plant","plant a plant").addOptions(plantOption));
 
         commandData.add(Commands.slash("expand", "expand current plot size by 1"));
 
