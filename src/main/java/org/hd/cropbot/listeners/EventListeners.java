@@ -19,12 +19,15 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.lang.reflect.Array;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class EventListeners extends ListenerAdapter {
 
     farm farm = new farm(3);
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    LocalDateTime now;
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
         //when user reacts to a message with an emoji
@@ -60,7 +63,7 @@ public class EventListeners extends ListenerAdapter {
         } else if (command.equals("farm")) {
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("plant")) {
-            farm.plantPlant(new plot(0,":seedling:",0,0));
+            farm.plantPlant(new plot(LocalDateTime.now(),":seedling:",0,0));
             event.reply(farm.displayFarm()).queue();
         } else if (command.equals("expand")) {
             farm.resizePlot();

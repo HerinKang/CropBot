@@ -1,14 +1,17 @@
 package org.hd.cropbot.listeners;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class plot {
 
-    private int time;
+    private String time;
     private String type;
     private int buyPrice;
     private int sellPrice;
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
-    public plot(int time, String type, int buyPrice, int sellPrice) {
-        this.time = time;
+    public plot(LocalDateTime now, String type, int buyPrice, int sellPrice) {
+        this.time = dtf.format(LocalDateTime.now());
         this.type = type;
         this.buyPrice = buyPrice;
         this.sellPrice = sellPrice;
@@ -22,7 +25,7 @@ public class plot {
         this.buyPrice = buyPrice;
     }
 
-    public void setTime(int time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
@@ -38,7 +41,7 @@ public class plot {
         return sellPrice;
     }
 
-    public int getTime() {
+    public String getTime() {
         return time;
     }
 
